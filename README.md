@@ -43,7 +43,7 @@ Design complex CSS shapes visually — no manual math required.
 ### Option 1: Direct Open
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/css-shape-designer.git
+git clone https://github.com/noorulahad/css-shape-designer
 
 # Open in browser
 open css-shape-designer/index.html
@@ -56,7 +56,7 @@ npx serve css-shape-designer
 ```
 
 ### Option 3: GitHub Pages
-Just enable **GitHub Pages** in repo settings → point to `main` branch → your tool is live!
+Just enable **GitHub Pages** in repo settings → point to `master` branch → your tool is live!
 
 ---
 
@@ -211,8 +211,8 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 ## 👤 Author
 
 **Your Name**
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
-- Twitter: [@YOUR_HANDLE](https://twitter.com/YOUR_HANDLE)
+- GitHub: [@noorulahad](https://github.com/noorulahad)
+- Instagram: [@noorulahad675](https://instagram.com/noorulahad675)
 
 ---
 
