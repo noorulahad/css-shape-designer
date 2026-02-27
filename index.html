@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Shape Designer</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ══════════ TOP BAR ══════════ -->
+    <div class="topbar">
+        <div class="topbar-logo">
+            <div class="logo-icon">◈</div>
+            CSS <span>Shape</span> Designer
+        </div>
+        <div class="topbar-presets">
+            <span class="topbar-label">Presets</span>
+            <button class="preset-chip" onclick="applyPreset('rectangle')">▭ Rectangle</button>
+            <button class="preset-chip" onclick="applyPreset('diamond')">◆ Diamond</button>
+            <button class="preset-chip" onclick="applyPreset('pentagon')">⬠ Pentagon</button>
+            <button class="preset-chip" onclick="applyPreset('hexagon')">⬡ Hexagon</button>
+            <button class="preset-chip" onclick="applyPreset('arrow')">➤ Arrow</button>
+            <button class="preset-chip" onclick="applyPreset('chevron')">❯ Chevron</button>
+            <button class="preset-chip" onclick="applyPreset('star')">★ Star</button>
+            <button class="preset-chip" onclick="applyPreset('card')">▱ Card Cut</button>
+            <button class="preset-chip" onclick="applyPreset('ribbon')">⋈ Ribbon</button>
+        </div>
+        <div class="topbar-right">
+            <div class="output-toggle">
+                <button id="typeClip" class="active" onclick="setShapeType('clip-path')">clip-path</button>
+                <button id="typePolygon" onclick="setShapeType('polygon')">polygon()</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ BREAKPOINT BAR ══════════ -->
+    <div class="bp-bar">
+        <div class="bp-bar-inner" id="bp-tabs-container"></div>
+        <button class="bp-add-tab" onclick="showAddBP()">
+            <div class="bp-add-icon">+</div>
+            Add Breakpoint
+        </button>
+        <div class="bp-ruler">
+            <span class="ruler-label">Screen</span>
+            <div class="ruler-track" id="ruler-track">
+                <!-- segments rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ MAIN ══════════ -->
+    <div class="main">
+
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+
+            <!-- TOOLS -->
+            <div class="panel-sec">
+                <div class="sec-title">Tools</div>
+                <div class="tool-grid">
+                    <div class="tool-card active" id="tcAdd" onclick="setMode('add')"
+                        title="Click canvas to add points">
+                        <div class="tool-icon">✦</div>
+                        Add
+                    </div>
+                    <div class="tool-card" id="tcMove" onclick="setMode('move')" title="Drag points to move them">
+                        <div class="tool-icon">⊹</div>
+                        Move
+                    </div>
+                    <div class="tool-card" id="tcDel" onclick="setMode('delete')" title="Click a point to delete it">
+                        <div class="tool-icon">✕</div>
+                        Delete
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="panel-sec">
+                <div class="sec-title">Actions</div>
+                <div class="action-row" style="margin-bottom:6px">
+                    <button class="act-btn" onclick="undoLast()" title="Undo last change">↩ Undo</button>
+                    <button class="act-btn red" onclick="clearPoints()" title="Clear all points">⊘ Clear</button>
+                </div>
+                <div class="action-row">
+                    <button class="act-btn" onclick="mirrorH()" title="Mirror horizontally">↔ Mirror H</button>
+                    <button class="act-btn" onclick="mirrorV()" title="Mirror vertically">↕ Mirror V</button>
+                </div>
+            </div>
+
+            <!-- POINTS -->
+            <div class="panel-sec">
+                <div class="sec-title">Points (<span id="pt-count">0</span>)</div>
+                <div class="pts-list" id="pts-list">
+                    <div class="empty-pts">Click canvas to add points</div>
+                </div>
+            </div>
+
+            <!-- CANVAS SIZE -->
+            <div class="panel-sec">
+                <div class="sec-title">Canvas Size</div>
+                <div class="size-row">
+                    <input type="number" class="sz-inp" id="cw" value="440" min="100" max="900"
+                        onchange="resizeCanvas()">
+                    <span class="sz-x">×</span>
+                    <input type="number" class="sz-inp" id="ch" value="300" min="100" max="700"
+                        onchange="resizeCanvas()">
+                    <span class="sz-x" style="font-size:10px;color:var(--text3)">px</span>
+                </div>
+            </div>
+
+            <!-- FILL -->
+            <div class="panel-sec">
+                <div class="sec-title">Fill</div>
+                <div class="fill-row">
+                    <span class="fill-label">Color A</span>
+                    <input type="color" id="color1" value="#6366f1" class="fill-color" onchange="updateFill()">
+                </div>
+                <div class="fill-row">
+                    <span class="fill-label">Color B</span>
+                    <input type="color" id="color2" value="#ec4899" class="fill-color" onchange="updateFill()">
+                </div>
+                <div class="fill-row">
+                    <span class="fill-label">Angle</span>
+                    <input type="range" class="fill-range" id="gradAngle" min="0" max="360" value="135"
+                        oninput="updateFill()">
+                </div>
+            </div>
+
+            <!-- OPTIONS -->
+            <div class="panel-sec">
+                <div class="sec-title">Options</div>
+                <div class="tog-row">
+                    <span class="tog-lbl">Animate transition</span>
+                    <label class="switch"><input type="checkbox" id="animToggle" onchange="toggleAnim()"><span
+                            class="slider"></span></label>
+                </div>
+                <div class="tog-row">
+                    <span class="tog-lbl">Show grid</span>
+                    <label class="switch"><input type="checkbox" id="gridToggle" checked onchange="toggleGrid()"><span
+                            class="slider"></span></label>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CANVAS -->
+        <div class="canvas-area">
+            <div class="canvas-bg">
+                <div id="canvas-wrap">
+                    <div id="shape-preview"></div>
+                    <svg id="svg-ol">
+                        <defs>
+                            <pattern id="grid-pat" width="24" height="24" patternUnits="userSpaceOnUse">
+                                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255,255,255,0.035)"
+                                    stroke-width="0.5" />
+                            </pattern>
+                        </defs>
+                        <rect id="grid-rect" width="100%" height="100%" fill="url(#grid-pat)" />
+                        <polygon id="shape-outline" fill="none" stroke="rgba(99,102,241,0.5)" stroke-width="1.5"
+                            stroke-dasharray="6,3" />
+                        <g id="lines-g"></g>
+                        <g id="pts-g"></g>
+                    </svg>
+                    <div id="interact"></div>
+                </div>
+            </div>
+
+            <!-- STATUS BAR -->
+            <div class="statusbar">
+                <div class="sb-item">
+                    <div class="sb-dot"></div>
+                </div>
+                <div class="sb-item">Mode: <span class="sb-val" id="sb-mode">Add Point</span></div>
+                <div class="sb-item">Points: <span class="sb-val" id="sb-pts">0</span></div>
+                <div class="sb-item">XY: <span class="sb-val" id="sb-xy">—</span></div>
+                <div class="sb-item">Breakpoint: <span class="sb-val" id="sb-bp">Default</span></div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div class="r-tabs">
+                <button class="r-tab active" onclick="setRTab('code',this)">Code</button>
+                <button class="r-tab" onclick="setRTab('responsive',this)">Responsive</button>
+                <button class="r-tab" onclick="setRTab('edit',this)">Edit Point</button>
+            </div>
+
+            <div class="r-content">
+
+                <!-- CODE TAB -->
+                <div id="rtab-code">
+                    <div class="r-section">
+                        <div class="code-wrap">
+                            <div class="code-header">
+                                <span class="code-lang">CSS</span>
+                                <button class="code-copy" onclick="copyCode('css-out',this)">Copy</button>
+                            </div>
+                            <pre class="code-body" id="css-out">/* Add points to canvas */</pre>
+                        </div>
+                    </div>
+                    <div class="r-section">
+                        <div
+                            style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:10px;">
+                            Live Preview</div>
+                        <div class="mini-prev-box" id="mini-prev"></div>
+                    </div>
+                </div>
+
+                <!-- RESPONSIVE TAB -->
+                <div id="rtab-responsive" style="display:none">
+                    <div class="r-section">
+                        <div style="font-size:10px;color:var(--text3);margin-bottom:12px;">Customize each breakpoint
+                            shape, then copy the full responsive CSS below.</div>
+                        <div id="resp-blocks"></div>
+                        <button class="copy-all-btn" onclick="copyAllResp(this)">⬇ Copy All Responsive CSS</button>
+                    </div>
+                </div>
+
+                <!-- EDIT POINT TAB -->
+                <div id="rtab-edit" style="display:none">
+                    <div class="r-section" id="edit-panel-inner">
+                        <div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Select a point from canvas or
+                            list to edit its coordinates.</div>
+                        <div class="input-row">
+                            <span class="input-lbl">X (%)</span>
+                            <input type="number" class="input-field" id="px-inp" min="0" max="100" step="0.5"
+                                oninput="updateSelPoint()">
+                        </div>
+                        <div class="input-row">
+                            <span class="input-lbl">Y (%)</span>
+                            <input type="number" class="input-field" id="py-inp" min="0" max="100" step="0.5"
+                                oninput="updateSelPoint()">
+                        </div>
+                        <div class="input-hint">Values are percentages relative to the element's size</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ ADD BREAKPOINT MODAL ══════════ -->
+    <div class="modal-bg" id="bp-modal">
+        <div class="modal-box">
+            <div class="modal-title">Add Breakpoint</div>
+            <div class="modal-sub">Define a screen size breakpoint. The shape will adapt for that width.</div>
+            <div class="modal-field">
+                <div class="modal-lbl">Name</div>
+                <input type="text" class="modal-input" id="bpNameIn" placeholder="e.g. Mobile, Tablet">
+            </div>
+            <div class="modal-field">
+                <div class="modal-lbl">Max-Width (px)</div>
+                <input type="number" class="modal-input" id="bpWidthIn" placeholder="e.g. 768">
+            </div>
+            <div class="modal-field">
+                <div class="modal-lbl">Color</div>
+                <div class="color-swatches" id="swatch-row"></div>
+            </div>
+            <div class="modal-btns">
+                <button class="modal-btn sec" onclick="hideAddBP()">Cancel</button>
+                <button class="modal-btn pri" onclick="confirmAddBP()">Add Breakpoint</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
